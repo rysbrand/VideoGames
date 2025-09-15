@@ -41,35 +41,43 @@ int main()
 	{
 		while (const std::optional<sf::Event> event = window.pollEvent())
 		{
+			bool jumpPressed = false;
 			if (event->is<sf::Event::Closed>())
 				window.close();
 
 			if (event->is<sf::Event::KeyReleased>()) {
 				//handle key release. here for debugging purposes.
 			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space))  jumpPressed = true;
+
+			if (jumpPressed && onGround) {
+				vel.y = jumpVel;
+				onGround = false;
 		}
 
+		float deltaTime = clock.restart().asSeconds();
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right))
 		{
+			std::cout << "Right key pressed" << std::endl;
 			pos.x += spritespeed;
 		}
 		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
 		{
+			std::cout << "Left key pressed" << std::endl;
 			pos.x -= spritespeed;
 		}
-		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up))
-		{
-			pos.y -= spritespeed;
-		}
-		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down))
-		{
-			pos.y += spritespeed;
+		vel.y += gravity * deltaTime;
+		pos += vel * deltaTime;
+
+		if (pos.y >= groundY) {
+			pos.y = groundY;
+			vel.y = 0.f;
+			onGround = true;
 		}
 
-		sprite.setPosition(pos);
+		player.setPosition(pos);
 		window.clear();
-		window.draw(sprite);;
-		window.draw(text);
+		window.draw(player);
 		window.display();
 	}
 	return 0;
