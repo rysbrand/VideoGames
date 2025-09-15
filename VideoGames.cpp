@@ -1,43 +1,74 @@
-﻿// VideoGames.cpp : Defines the entry point for the application.
-//
-
-#include "VideoGames.h"
+﻿#include "VideoGames.h"
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <SFML/Window/Keyboard.hpp>
+
 #include <iostream>
+
 
 using namespace std;
 
 int main()
 {
-	float x = 0;
-	float y = 0;
+	/*float x = 0.0f;
+	float y = 0.0f;*/
 
+	//set up window dimensions
 	const int windowWidth = 1000;
 	const int windowHeight = 700;
-	sf::RenderWindow window(sf::VideoMode({windowWidth, windowHeight }), "My window");
+
+
+	//create and title the window
+	sf::RenderWindow window(sf::VideoMode({ windowWidth, windowHeight }), "My window");
 	window.setFramerateLimit(60);
+	//load the background texture
+	sf::Texture btexture("C:\\Users\\becca.ysbrand\\OneDrive - Southeast Technical College\\Desktop\\VideoGames\\VideoGames\\Platformerpack\\PNG\\Backgrounds\\blue_desert.png");
+	//repeat the texture to fill the window
+
+	sf::Sprite background(btexture);
+	sf::IntRect textureRect({ 0, 0 }, { windowWidth * 8, windowHeight * 2});
+	background.setTextureRect(textureRect);
+	btexture.setRepeated(true);
+
+
+	sf::View view(window.getDefaultView());
+
+
+	
 
 	sf::Texture texture("C:\\Users\\becca.ysbrand\\OneDrive - Southeast Technical College\\Desktop\\VideoGames\\VideoGames\\cute_pixelperson.png");
-	sf::Sprite sprite(texture);
-	sprite.setOrigin(sf::Vector2f(0, 0));
-	sprite.setPosition({ 10.f, 50.f });
+	if (!texture.loadFromFile("C:\\Users\\becca.ysbrand\\OneDrive - Southeast Technical College\\Desktop\\VideoGames\\VideoGames\\cute_pixelperson.png")) {
+		std::cerr << "Failed to load texture\n";
+		return 1;
+	}
 
+	sf::Sprite player(texture);
+
+	player.setOrigin(sf::Vector2f(0, 0));
+
+	sf::Vector2f pos{ 10.f, 50.f };
+	sf::Vector2f vel{ 0.f, 0.f };
+	const float moveSpeed = 220.f;     // px/s
+	const float jumpVel = -420.f;    // px/s (negative = up)
+	const float gravity = 1200.f;    // px/s^2
+	bool onGround = false;
 	float spritespeed = 5.0f;
+	
+	auto bounds = player.getGlobalBounds();
+	float groundY = windowHeight - bounds.size.y - 10.f;
+
+	pos.y = groundY;
 
 	sf::Clock clock;
 	sf::Time t1 = sf::microseconds(10000);
 	sf::Time t2 = sf::milliseconds(10);
 	sf::Time t3 = sf::seconds(0.0f);
-	
-	sf::Font font ("C:\\Users\\becca.ysbrand\\OneDrive - Southeast Technical College\\Desktop\\VideoGames\\VideoGames\\fonts\\love-days-love-font\\LoveDays-2v7Oe.ttf");
-	sf::Text text(font,"Hello SFML", 50);
 
-	sf::Vector2f pos = sprite.getPosition();
+	pos = player.getPosition();
 
 	while(window.isOpen())
+
 	{
 		while (const std::optional<sf::Event> event = window.pollEvent())
 		{
@@ -53,9 +84,11 @@ int main()
 			if (jumpPressed && onGround) {
 				vel.y = jumpVel;
 				onGround = false;
-		}
+			}
 
+		}
 		float deltaTime = clock.restart().asSeconds();
+		// Keyboard input
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right))
 		{
 			std::cout << "Right key pressed" << std::endl;
@@ -75,8 +108,12 @@ int main()
 			onGround = true;
 		}
 
+		view.setCenter(player.getPosition());
+		window.setView(view);
+
 		player.setPosition(pos);
-		window.clear();
+		window.clear(sf::Color(30, 30, 45));
+		window.draw(background);
 		window.draw(player);
 		window.display();
 	}
