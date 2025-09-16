@@ -11,7 +11,7 @@ void Game::initPlayer() {
 	this->player = new Player();
 }
 
-Game::Game() {
+Game::Game() : player{} {
 
 	this->initWindow();
 	this->initPlayer();
@@ -24,34 +24,39 @@ Game::~Game()
 
 void Game::updatePlayer() 
 {
-
+	this->player->update();
 }
 
 void Game::update()
 {
 	//polling window events
-	while (window.isOpen())
+	while (const auto event = window.pollEvent())
 	{
-		bool jumpPressed = false;
-		while (const auto event = window.pollEvent()) 
+		if (event->is<sf::Event::Closed>())
+			window.close();
+		else if (event->is<sf::Event::KeyPressed>() &&
+			event->getIf<sf::Event::KeyPressed>()->code == sf::Keyboard::Key::Escape)
 		{
-			if (event->is<sf::Event::Closed>())
-				window.close();
-			else if (event->is<sf::Event::KeyPressed>() &&
-				event->getIf<sf::Event::KeyPressed>()->code == sf::Keyboard::Key::Escape)
-				{
-					window.close();
-				}
+			window.close();
 		}
 	}
+	this->updatePlayer();
+
+}
+
+
+void Game::renderPlayer() 
+{
+	this->player->render(this->window);
 }
 
 void Game::render() 
 {
-	this->window.clear(sf::Color::Black);
+	//this->window.clear(sf::Color::Black);
+	window.clear(sf::Color::Black);
 
 	//render stuff here
-
+	this->renderPlayer();
 	this->window.display();
 }
 const sf::RenderWindow& Game::getWindow() const

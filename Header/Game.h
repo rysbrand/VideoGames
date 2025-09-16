@@ -13,12 +13,15 @@ private:
 	void initPlayer();
 
 public:
+
+	//Constructors/Destructors
 	Game();
 	virtual ~Game();
 
 	//Functions
 	void updatePlayer();
 	void update();
+	void renderPlayer();
 	void render();
 	const sf::RenderWindow& getWindow() const;
 	
