@@ -1,18 +1,9 @@
-﻿#include "VideoGames.h"
-#include <SFML/Audio.hpp>
-#include <SFML/Graphics.hpp>
-#include <SFML/Window.hpp>
-#include <SFML/Window/Keyboard.hpp>
-
-#include <iostream>
-
+﻿#include "../Header/Game.h"
 
 using namespace std;
 
 int main()
 {
-	/*float x = 0.0f;
-	float y = 0.0f;*/
 
 	//set up window dimensions
 	const int windowWidth = 1000;
@@ -22,31 +13,33 @@ int main()
 	//create and title the window
 	sf::RenderWindow window(sf::VideoMode({ windowWidth, windowHeight }), "My window");
 	window.setFramerateLimit(60);
+
 	//load the background texture
 	sf::Texture btexture("C:\\Users\\becca.ysbrand\\OneDrive - Southeast Technical College\\Desktop\\VideoGames\\VideoGames\\Platformerpack\\PNG\\Backgrounds\\blue_desert.png");
-	//repeat the texture to fill the window
 
+	//create the background sprite
 	sf::Sprite background(btexture);
-	sf::IntRect textureRect({ 0, 0 }, { windowWidth * 8, windowHeight * 2});
+	//set the texture to be repeated to cover the entire window
+	sf::IntRect textureRect({ 0, 0 }, { windowWidth * 8, windowHeight * 2 });
 	background.setTextureRect(textureRect);
 	btexture.setRepeated(true);
 
-
+	//create a view
 	sf::View view(window.getDefaultView());
 
-
-	
-
+	//load the player texture
 	sf::Texture texture("C:\\Users\\becca.ysbrand\\OneDrive - Southeast Technical College\\Desktop\\VideoGames\\VideoGames\\cute_pixelperson.png");
 	if (!texture.loadFromFile("C:\\Users\\becca.ysbrand\\OneDrive - Southeast Technical College\\Desktop\\VideoGames\\VideoGames\\cute_pixelperson.png")) {
 		std::cerr << "Failed to load texture\n";
 		return 1;
 	}
-
+	//create the player sprite
 	sf::Sprite player(texture);
 
+	//set the origin to the center of the sprite for rotation and scaling
 	player.setOrigin(sf::Vector2f(0, 0));
 
+	//set initial position of the player
 	sf::Vector2f pos{ 10.f, 50.f };
 	sf::Vector2f vel{ 0.f, 0.f };
 	const float moveSpeed = 220.f;     // px/s
@@ -99,6 +92,7 @@ int main()
 			std::cout << "Left key pressed" << std::endl;
 			pos.x -= spritespeed;
 		}
+
 		vel.y += gravity * deltaTime;
 		pos += vel * deltaTime;
 
