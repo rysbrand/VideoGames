@@ -1,4 +1,5 @@
-﻿#include "../Header/Game.h"
+﻿#include "../Header/stdafx.h"
+#include "../Header/Game.h"
 
 using namespace std;
 

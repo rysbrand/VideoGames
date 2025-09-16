@@ -12,7 +12,7 @@ endif()
 project ("VideoGames")
 
 # Add source to this project's executable.
-add_executable (VideoGames "source/VideoGames.cpp" "VideoGames.h"    "Header/stdafx.h" "source/stdafx.cpp" "source/Game.cpp" "Header/Game.h")
+add_executable (VideoGames "Header/stdafx.h" "source/stdafx.cpp" "source/Game.cpp" "Header/Game.h" "source/main.cpp" "source/Player.cpp" "Header/Player.h")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET VideoGames PROPERTY CXX_STANDARD 20)
