@@ -12,24 +12,40 @@ private:
 	sf::Texture textureSheet;
 	sf::Sprite sprite;
 	sf::Clock animationTimer;
+
+	//animation stuffs
+	bool animationSwitch;
 	short animationState;
 	sf::IntRect currentFrame;
 	
+	//Physics nonsense
+	sf::Vector2f velocity;
+	float velocityMax;
+	float velocityMin;
+	float acceleration;
+	float drag;
 
-	//core values
+	//core values to initialize
 	void initVariables();
 	void initTexture();
 	void initSprite();
 	void initAnimations();
+	void initPhysics();
 
 public:
 
 	Player();
 	virtual ~Player();
 
-	//function
+	const bool& getanimationSwitch();
 
+	//functions
+
+	//tells it what directions you can move
+	void resetAnimationTimer();
+	void move(const float dir_x, const float dir_y);
 	void updateMovement();
+	void updatePhysics();
 	void updateAnimations();
 	void update();
 	void render(sf::RenderTarget& target);

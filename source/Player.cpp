@@ -5,7 +5,6 @@
 
 void Player::initVariables() 
 {
-	this->moving = false;
 	this->animationState = PLAYER_ANIMATION_STATES::IDLE;
 }
 
@@ -29,6 +28,20 @@ void Player::initSprite()
 	}
 }
 
+void Player::initAnimations()
+{
+	this->animationTimer.restart();
+	bool animSwitch = true;
+}
+
+void Player::initPhysics() 
+{
+	this->velocityMax = 5.f;
+	this->velocityMin = 1.f;
+	this->acceleration = 2.f;
+	this->drag = 0.93f;
+}
+
 Player::Player() 
 	: sprite(textureSheet)
 {
@@ -36,10 +49,42 @@ Player::Player()
 	this->initTexture();
 	this->initSprite();
 	this->initAnimations();
+	this->initPhysics();
 }
 
 Player::~Player() = default;
 
+void Player::move(const float dir_x, const float dir_y) 
+{
+	//speed up
+	this->velocity.x += dir_x * this->acceleration;
+	this->velocity.y += dir_y * this->acceleration;
+	//velocity
+	if (std::abs(this->velocity.x) > this->velocityMax) 
+	{
+		//this says that if velocity x is less than 0, multiply by -1, making it negative (y), otherwise by 1.
+		this->velocity.x = this->velocityMax * ((this->velocity.x < 0) ? -1.0f : 1.0f); 
+		//caps velocity for moving left or right ^
+	}
+}
+
+void Player::updatePhysics() 
+{
+	//drag
+	this->velocity *= this->drag;
+	//limit drag using absolute
+	if (std::abs(this->velocity.x) < (this->velocityMin) )
+	{
+		this->velocity.x = 0.f;
+	}
+
+	if (std::abs(this->velocity.y) < (this->velocityMin))
+	{
+		this->velocity.y = 0.f;
+	}
+
+	this->sprite.move(this->velocity);
+}
 
 
 void Player::updateMovement() 
@@ -48,18 +93,34 @@ void Player::updateMovement()
 	this->animationState = PLAYER_ANIMATION_STATES::IDLE;
 	if ((sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) || (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left)))
 	{
-		this->sprite.move({-1.f, 0.f});
+		this->move(-1.f, 0.f);
 		this->animationState = PLAYER_ANIMATION_STATES::MOVING_LEFT;
 		//this->moving=true;
 	}
 
 	else if ((sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) || (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right)))
 	{
-		this->sprite.move({ 1.f, 0.f });
+		this->move( 1.f, 0.f );
 		this->animationState = PLAYER_ANIMATION_STATES::MOVING_RIGHT;
 		//this->moving = true;
 	}
 }
+const bool& Player::getanimationSwitch() 
+{
+	bool animSwitch = this->animationSwitch;
+	if (this->animationSwitch) 
+	{
+		this->animationSwitch = false;
+	}
+	return animSwitch;
+
+}
+void Player::resetAnimationTimer() 
+{
+	this->animationTimer.restart();
+	this->animationSwitch = true;
+}
+
 void Player::updateAnimations()
 {
 	if (this->animationState == PLAYER_ANIMATION_STATES::IDLE)
@@ -70,7 +131,7 @@ void Player::updateAnimations()
 
 	else if (this->animationState == PLAYER_ANIMATION_STATES::MOVING_RIGHT) 
 	{
-		if (this->animationTimer.getElapsedTime().asSeconds() >= 0.1f)
+		if (this->animationTimer.getElapsedTime().asSeconds() >= 0.1f || this->getanimationSwitch())
 		{
 			if (currentFrame.position.y == 512) {
 				currentFrame.position.y = 1792;
@@ -94,7 +155,7 @@ void Player::updateAnimations()
 		if (this->animationState == PLAYER_ANIMATION_STATES::MOVING_LEFT)
 		{
 
-			if (this->animationTimer.getElapsedTime().asSeconds() >= 0.1f)
+			if (this->animationTimer.getElapsedTime().asSeconds() >= 0.1f )
 			{
 				if (currentFrame.position.y == 512) {
 					currentFrame.position.y = 1792;
@@ -114,16 +175,13 @@ void Player::updateAnimations()
 		}
 	}
 }
-void Player::initAnimations() 
-{
-	this->animationTimer.restart();
-}
 
 //function
 void Player::update() 
 {
 	this->updateMovement();
 	this->updateAnimations();
+	this->updatePhysics();
 }
 
 

@@ -34,11 +34,22 @@ void Game::update()
 	while (const auto event = window.pollEvent())
 	{
 		if (event->is<sf::Event::Closed>())
+		{
 			window.close();
+		}
 		else if (event->is<sf::Event::KeyPressed>() &&
 			event->getIf<sf::Event::KeyPressed>()->code == sf::Keyboard::Key::Escape)
 		{
 			window.close();
+		}
+
+		//This code is really ugly, should've made it its own little component.
+		if (event->is<sf::Event::KeyReleased>()  &&
+				((sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) || (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left)
+				|| sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D) 
+				|| sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right))))
+		{
+			this->player->resetAnimationTimer();
 		}
 	}
 	this->updatePlayer();
