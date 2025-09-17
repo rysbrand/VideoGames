@@ -1,22 +1,24 @@
 #pragma once
 #include "../Header/stdafx.h"
 
-class Player 
+class Player
 {
-
 private:
+
+
 	sf::Texture textureSheet;
 	sf::Sprite sprite;
 
-	//any future animation goes here
+	bool moving;
+	sf::Clock animationTimer;
 
-	//movement goes here
+	sf::IntRect currentFrame;
 
 	//core values
-
+	void initVariables();
 	void initTexture();
 	void initSprite();
-
+	void initAnimations();
 
 public:
 
@@ -25,6 +27,11 @@ public:
 
 	//function
 
+	void updateMovement();
+	void updateAnimations();
 	void update();
 	void render(sf::RenderTarget& target);
-};
+
+	//these semicolons look weird, but for some reason if I remove them, it gives me errors
+	;;;;;;;;
+};;;;;;;

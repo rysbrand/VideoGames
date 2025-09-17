@@ -5,6 +5,7 @@
 void Game::initWindow() {
 	//create and title the window
 	this->window.create(sf::VideoMode({ 800, 600 }), "Look What I Can Do!", sf::Style::Close | sf::Style::Titlebar);
+	this->window.setFramerateLimit(144);
 }
 
 void Game::initPlayer() {
@@ -41,7 +42,6 @@ void Game::update()
 		}
 	}
 	this->updatePlayer();
-
 }
 
 
