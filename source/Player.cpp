@@ -6,6 +6,7 @@
 void Player::initVariables() 
 {
 	this->moving = false;
+	this->animationState = PLAYER_ANIMATION_STATES::IDLE;
 }
 
 void Player::initTexture() 
@@ -44,35 +45,33 @@ Player::~Player() = default;
 void Player::updateMovement() 
 {
 	//movement
-	this->moving = false; //(sprite doesn't start moving until key is pressed)
+	this->animationState = PLAYER_ANIMATION_STATES::IDLE;
 	if ((sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) || (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left)))
 	{
 		this->sprite.move({-1.f, 0.f});
-		this->moving = true;
+		this->animationState = PLAYER_ANIMATION_STATES::MOVING_LEFT;
+		//this->moving=true;
 	}
 
 	else if ((sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) || (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right)))
 	{
 		this->sprite.move({ 1.f, 0.f });
-		this->moving = true;
-	}
-
-	else if ((sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)) || (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up)))
-	{
-		this->sprite.move({ 0.f, -1.f });
-		this->moving = true;
-	}
-	else if ((sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) || (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down)))
-	{
-		this->sprite.move({ 0.f, 1.f });
-		this->moving = true;
+		this->animationState = PLAYER_ANIMATION_STATES::MOVING_RIGHT;
+		//this->moving = true;
 	}
 }
 void Player::updateAnimations()
 {
-	if (this->animationTimer.getElapsedTime().asSeconds() >= 0.1f)
+	if (this->animationState == PLAYER_ANIMATION_STATES::IDLE)
 	{
-		if (this->moving == true) {
+		currentFrame.position.y = 512;
+		currentFrame.position.x = 384;
+	}
+
+	else if (this->animationState == PLAYER_ANIMATION_STATES::MOVING_RIGHT) 
+	{
+		if (this->animationTimer.getElapsedTime().asSeconds() >= 0.1f)
+		{
 			if (currentFrame.position.y == 512) {
 				currentFrame.position.y = 1792;
 				currentFrame.position.x = 256;
@@ -82,13 +81,37 @@ void Player::updateAnimations()
 				currentFrame.position.x = 256;
 			}
 			else {
-				currentFrame.position.y = 512;   
-				currentFrame.position.x = 384; 
+				currentFrame.position.y = 512;
+				currentFrame.position.x = 384;
 			}
 			this->sprite.setTextureRect(this->currentFrame);
-		}
 
-		this->animationTimer.restart();
+			this->animationTimer.restart();
+		}
+	}
+
+	else {
+		if (this->animationState == PLAYER_ANIMATION_STATES::MOVING_LEFT)
+		{
+
+			if (this->animationTimer.getElapsedTime().asSeconds() >= 0.1f)
+			{
+				if (currentFrame.position.y == 512) {
+					currentFrame.position.y = 1792;
+					currentFrame.position.x = 256;
+				}
+				else if (currentFrame.position.y == 1792) {
+					currentFrame.position.y = 1536;
+					currentFrame.position.x = 256;
+				}
+				else {
+					currentFrame.position.y = 512;
+					currentFrame.position.x = 384;
+				}
+				this->sprite.setTextureRect(this->currentFrame);
+				this->animationTimer.restart();
+			}
+		}
 	}
 }
 void Player::initAnimations() 

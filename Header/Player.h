@@ -1,18 +1,20 @@
 #pragma once
 #include "../Header/stdafx.h"
 
+
+enum PLAYER_ANIMATION_STATES { IDLE = 0, MOVING_LEFT, MOVING_RIGHT, JUMPING, FALLING };
+
 class Player
 {
 private:
 
-
+	//thingggsssss i create
 	sf::Texture textureSheet;
 	sf::Sprite sprite;
-
-	bool moving;
 	sf::Clock animationTimer;
-
+	short animationState;
 	sf::IntRect currentFrame;
+	
 
 	//core values
 	void initVariables();
