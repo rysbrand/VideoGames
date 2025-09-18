@@ -26,6 +26,11 @@ private:
 	float drag;
 	float gravity;
 	float velocityMaxY;
+	bool onGround;
+	bool canDoubleJump;
+	bool jumpHeldPrev; 
+
+
 
 	//core values to initialize
 	void initVariables();
@@ -48,6 +53,9 @@ public:
 	//Bounds and Collision
 	void setPosition(const float x, const float y);
 	void resetVelocityY();
+	void playerJump();
+	void landOn(float newY);  
+	bool isOnGround() const { return onGround; }
 
 	//functions
 	void resetAnimationTimer();

@@ -6,6 +6,7 @@
 void Player::initVariables() 
 {
 	this->animationState = PLAYER_ANIMATION_STATES::IDLE;
+	this->animationState = true;
 }
 
 void Player::initTexture() 
@@ -18,7 +19,7 @@ void Player::initTexture()
 
 void Player::initSprite()
 {
-	this->sprite = sf::Sprite(this->textureSheet);
+	//this->sprite = sf::Sprite(this->textureSheet);
 
 	//Tells yo what part of texture sheet, sets frame for future animation.
 	{
@@ -31,7 +32,7 @@ void Player::initSprite()
 void Player::initAnimations()
 {
 	this->animationTimer.restart();
-	bool animSwitch = true;
+	this->animationSwitch = true;
 }
 
 void Player::initPhysics() 
@@ -40,8 +41,9 @@ void Player::initPhysics()
 	this->velocityMin = 1.f;
 	this->acceleration = 3.f;
 	this->drag = 0.87f;
-	this->gravity = 4.f;
-	this->velocityMaxY = 15.f;
+	this->gravity = 1.6f;
+	this->velocityMaxY = 22.f;
+	this->onGround = false;
 }
 
 Player::Player() 
@@ -95,7 +97,7 @@ void Player::updatePhysics()
 	//gravity, yay!
 	this->velocity.y += 1.0 * this->gravity;
 
-	if (std::abs(this->velocity.x) > this->velocityMaxY)
+	if (std::abs(this->velocity.y) > this->velocityMaxY)
 	{
 		//this says that if velocity x is less than 0, multiply by -1, making it negative (y), otherwise by 1.
 		this->velocity.y = this->velocityMaxY * ((this->velocity.y < 0) ? -1.0f : 1.0f);
@@ -123,6 +125,7 @@ void Player::updateMovement()
 {
 	//movement
 	this->animationState = PLAYER_ANIMATION_STATES::IDLE;
+	bool jumpPressed = false;
 	if ((sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) || (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left)))
 	{
 		this->move(-1.f, 0.f);
@@ -135,15 +138,54 @@ void Player::updateMovement()
 		this->animationState = PLAYER_ANIMATION_STATES::MOVING_RIGHT;
 
 	}
+
+	 if (( sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space)) )
+	{
+		bool jumpNow = true;
+		this->playerJump();
+	}
 }
+
+void Player::playerJump()
+{
+	// 1st jump
+	if (this->onGround)
+	{
+		this->velocity.y = -this->velocityMaxY; // up is negative!!
+		this->onGround = false;
+		this->canDoubleJump = true; 
+		this->animationState = PLAYER_ANIMATION_STATES::JUMPING;
+		return;
+	}
+
+	// double jump
+	if (this->canDoubleJump)
+	{
+		this->velocity.y = -this->velocityMaxY;
+		this->canDoubleJump = false;
+		this->animationState = PLAYER_ANIMATION_STATES::JUMPING;
+	}
+}
+
+void Player::landOn(float newY)
+{
+	// place feet on ground and reset vertical speed/flags
+	const float x = this->getPosition().x;
+	this->setPosition((x), newY);
+	this->resetVelocityY();
+	this->onGround = true;
+	this->canDoubleJump = true;
+	if (this->animationState == PLAYER_ANIMATION_STATES::JUMPING)
+	{
+		this->animationState = PLAYER_ANIMATION_STATES::IDLE;
+	}
+}
+
 const bool& Player::getanimationSwitch() 
 {
-	bool animSwitch = this->animationSwitch;
-	if (this->animationSwitch) 
-	{
-		this->animationSwitch = false;
-	}
-	return animSwitch;
+	bool anim = this->animationSwitch; 
+	this->animationSwitch = false;
+	return anim;
 
 }
 void Player::resetAnimationTimer() 
@@ -161,7 +203,7 @@ void Player::updateAnimations()
 
 		this->sprite.setTextureRect(this->currentFrame);
 
-		//c++ is wild, auto literally means hey compiler, heres a variable with a value, figure it out yourself what type it is
+		//c++ is wild, auto literally means hey compiler, heres a variable with a value, figure it out for yourself what type it is
 		auto b = this->sprite.getGlobalBounds();
 		this->sprite.setOrigin({b.size.x * 0.5f, 0.f});
 		//I'm pretty sure the ugly way to write this is this->sprite.setOrigin({sprite.getGlobalBounds().size.x* 0.5f, 0.f});
@@ -229,6 +271,26 @@ void Player::updateAnimations()
 			this->animationTimer.restart();
 		}
 		this->sprite.setScale({-0.5f, 0.5f});
+		return;
+	}
+	
+	else if (this->animationState == PLAYER_ANIMATION_STATES::JUMPING) 
+	{
+		if (this->animationTimer.getElapsedTime().asSeconds() >= 0.1f || this->getanimationSwitch()) 
+		{
+			if (currentFrame.position.y == 512) 
+			{
+				currentFrame.position.y = 1536;
+				currentFrame.position.x = 768;
+			}
+			this->sprite.setTextureRect(this->currentFrame);
+
+			auto b = this->sprite.getGlobalBounds();
+			this->sprite.setOrigin({ b.size.x * 0.5f, 0.f });
+
+			this->animationTimer.restart();
+		}
+		this->sprite.setScale({ -0.5f, 0.5f });
 		return;
 	}
 }

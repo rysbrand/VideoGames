@@ -44,6 +44,7 @@ void Game::updateCollision()
 
 		const float newY = windowHeight - playerHeight;
 		this->player->setPosition(pos.x, newY);
+		this->player->landOn(newY);
 	}
 }
 
