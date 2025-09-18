@@ -1,10 +1,11 @@
 #include "../Header/Tile.h"
 #include "../Header/stdafx.h"
 
-Tile::Tile(sf::Texture& texturesheet, sf::IntRect texturerect, bool damaging)
-	: damaging(damaging), sprite(texturesheet)
+Tile::Tile(sf::Texture* texturesheet, sf::IntRect texturerect, bool damaging)
+	: damaging(damaging), sprite(*texturesheet)
 {
-	this->sprite.setTexture(texturesheet);
+	//see? * makes it so it can be a null reference rn. this is what allows plug and play, i guess
+	this->sprite.setTexture(*texturesheet);
 	this->sprite.setTextureRect(texturerect);
 }
 

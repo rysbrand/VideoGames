@@ -8,11 +8,15 @@ private:
 	//vectors! for making maps! bits of maps (or other images for use, kinda like pixels) are called tiles
 	//need a vector ARRAY to put all the vectors together
 	std::vector<std::vector<Tile* >> tiles;
+	sf::Texture* tileSheet;
+	unsigned tileSize;
 	
 public:
 
 	//constructor
 	TileMap();
+	//constructor that lets us load texturesheet and stuffs
+	TileMap(unsigned width, unsigned height, sf::Texture* tile_sheet, unsigned tile_size);
 	//deconstructor
 	~TileMap();
 
@@ -23,6 +27,7 @@ public:
 	void removeTile(unsigned x, unsigned y);
 
 	void update();
-	void render();
+	//will render this in game also!
+	void render(sf::RenderTarget& target);
 
 };

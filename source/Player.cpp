@@ -304,7 +304,7 @@ void Player::update()
 }
 
 
-//render to target/window
+//render to target/window (ie in game.cpp)
 void Player::render(sf::RenderTarget& target) 
 {
 	target.draw(this->sprite);
