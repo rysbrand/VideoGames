@@ -5,7 +5,7 @@
 void Game::initWindow() {
 	//create and title the window
 	this->window.create(sf::VideoMode({ 800, 600 }), "Look What I Can Do!", sf::Style::Close | sf::Style::Titlebar);
-	this->window.setFramerateLimit(144);
+	this->window.setFramerateLimit(60);
 }
 
 void Game::initPlayer() {
@@ -26,6 +26,25 @@ Game::~Game()
 void Game::updatePlayer() 
 {
 	this->player->update();
+}
+
+void Game::updateCollision() 
+{
+	const sf::Vector2f pos = this->player->getPosition();
+	//find player bounds
+	const float playerHeight = this->player->getGlobalBounds().size.y;
+	//checks bottom of player bounds with bottom of window
+	const float playerBottom = pos.y + playerHeight;
+	const float windowHeight = static_cast<float>(this->window.getSize().y);
+
+	//keeps player from falling through bottoms of window
+	if (playerBottom > windowHeight)
+	{
+		this->player->resetVelocityY();
+
+		const float newY = windowHeight - playerHeight;
+		this->player->setPosition(pos.x, newY);
+	}
 }
 
 void Game::update()
@@ -53,6 +72,7 @@ void Game::update()
 		}
 	}
 	this->updatePlayer();
+	this->updateCollision();
 }
 
 

@@ -17,13 +17,15 @@ private:
 	bool animationSwitch;
 	short animationState;
 	sf::IntRect currentFrame;
-	
+
 	//Physics nonsense
 	sf::Vector2f velocity;
 	float velocityMax;
 	float velocityMin;
 	float acceleration;
 	float drag;
+	float gravity;
+	float velocityMaxY;
 
 	//core values to initialize
 	void initVariables();
@@ -37,11 +39,17 @@ public:
 	Player();
 	virtual ~Player();
 
+
 	const bool& getanimationSwitch();
+	const sf::Vector2f getPosition() const;
+	const sf::FloatRect getGlobalBounds() const;
+	
+
+	//Bounds and Collision
+	void setPosition(const float x, const float y);
+	void resetVelocityY();
 
 	//functions
-
-	//tells it what directions you can move
 	void resetAnimationTimer();
 	void move(const float dir_x, const float dir_y);
 	void updateMovement();
@@ -50,6 +58,4 @@ public:
 	void update();
 	void render(sf::RenderTarget& target);
 
-	//these semicolons look weird, but for some reason if I remove them, it gives me errors
-	;;;;;;;;
-};;;;;;;
+};
